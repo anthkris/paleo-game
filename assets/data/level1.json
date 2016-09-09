@@ -1,0 +1,5 @@
+{
+  "playerStart": {"x": 100, "y": 200},
+  "runningSpeed": 100,
+  "duration": 30
+}
