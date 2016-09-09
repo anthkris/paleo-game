@@ -10,8 +10,8 @@ Paleo.Food = function(game){
     //     this.frame = 1;
     // }
 
-    var x = this.game.rnd.between(100, 770);
-    var y = this.game.rnd.between(0, 570);
+    var x = this.game.rnd.between(50, 600);
+    var y = this.game.rnd.between(50, 450);
 
     Phaser.Sprite.call(this, this.game, x, y, 'food', frame);
 

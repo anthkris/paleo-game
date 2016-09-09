@@ -34,6 +34,7 @@ Paleo.GameState = {
         this.player.animations.add('walkRight', [3, 4, 5, 4], 10, true);
     	this.game.physics.arcade.enable(this.player);
     	this.player.body.allowGravity = false;
+    	this.player.body.collideWorldBounds = true;
     },
     update: function() {
         if (this.cursors.down.isDown) {
@@ -65,7 +66,14 @@ Paleo.GameState = {
         this.game.time.events.remove(this.foodLoop);
     },
     createFood: function(){
-        this.allFood.add(new Paleo.Food(this.game, this));
+        var food = this.allFood.getFirstExists(false);
+        if (!food) {
+            food = new Paleo.Food(this.game, this);
+            this.allFood.add(food);
+        } else {
+            // reset position
+            food.reset();
+        }
     },
     createPaleoFood: function(){
         
