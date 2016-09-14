@@ -9,10 +9,11 @@ Paleo.BootState = {
     this.scale.pageAlignVertically = true;
 
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
-    this.game.stage.backgroundColor = "#4488AA";
+    //this.game.stage.backgroundColor = "#4488AA";
   },
   preload: function() {
   	this.load.image('preloadBar', 'assets/images/bar.png');
+  	this.load.image('grass', 'assets/images/grass03.png');
   },
   create: function() {
   	this.state.start('Preload');
