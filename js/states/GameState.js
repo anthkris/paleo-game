@@ -6,7 +6,7 @@ Paleo.GameState = {
     },
     create: function() {
         this.cursors = this.game.input.keyboard.createCursorKeys();
-        this.background = this.game.add.tileSprite(0,0, this.game.world.width, 450, 'grass');
+        this.background = this.game.add.tileSprite(0,0, this.game.world.width, 460, 'grass');
         
         //parse the file
         this.levelData = JSON.parse(this.game.cache.getText('level1'));
@@ -34,7 +34,17 @@ Paleo.GameState = {
     	this.player.body.collideWorldBounds = true;
     	this.player.body.setSize(25, 35);
     	this.player.body.offset.setTo(7, 5);
+    	this.player.body.collideWorldBounds = false;
     	
+    	this.wolf = this.add.sprite(this.player.position.x + this.game.world.width, this.player.position.y, 'wolf');
+        this.wolf.frame = 46;
+        this.wolf.anchor.setTo(0.5);
+        this.wolf.scale.setTo(2);
+        this.game.physics.arcade.enable(this.wolf);
+        this.wolf.checkWorldBounds = true;
+        this.wolf.animations.add('runYouDown', [50, 51, 52, 53,54], 10, true);
+        this.wolf.animations.add('killYou', [57, 58, 59, 58], 10, true);
+    	this.wolfCounter = 0;
     	this.thorg = this.add.sprite(30, this.game.world.height - 70, 'Thorg');
     	this.nextEvent = 4000;
     	//this.talkingShit();
@@ -42,7 +52,8 @@ Paleo.GameState = {
     },
     update: function() {
         this.game.physics.arcade.collide(this.player, this.allFood, this.collectFood, null, this);
-        //this.game.physics.arcade.collide(this.player, this.junkFood, this.dieHorribly, null, this);
+        this.game.physics.arcade.collide(this.wolf, this.allFood, this.wolfDevour, null, this);
+        this.game.physics.arcade.collide(this.player, this.wolf, this.dieHorribly, null, this);
         this.playerPosition = this.player.position;
         if (this.cursors.down.isDown) {
             this.player.body.velocity.y = this.levelData.runningSpeed;
@@ -72,9 +83,14 @@ Paleo.GameState = {
             this.updateNextEvent();
             // Do something
         }
+        if(this.allFood.children.length > 35 && this.wolfCounter === 0){
+            //console.log("Wolf running");
+            this.spawnWolf(this.player);
+        }
     },
     render: function(){
-      //this.game.debug.body(this.player);  
+      //this.game.debug.body(this.player);
+      this.game.debug.body(this.wolf);  
     },
     endLoops: function(){
         // Stop the loops when the delayed event triggers
@@ -120,6 +136,7 @@ Paleo.GameState = {
                 this.createFood();
             }
         }
+        food.events.onAddedToGroup.add(this.spawnWolf, this);
     },
     createJunk: function(){
         var coordinates = this.randomSpawnPosition(this.player);
@@ -139,21 +156,65 @@ Paleo.GameState = {
                 this.createJunk();
             }
         }
+        junk.events.onAddedToGroup.add(this.spawnWolf, this);
     },
     collectFood: function(player, food){
-        //console.log(food._frame.index);
         if (this.levelData.junkArray.indexOf(food._frame.index) === -1) {
             food.kill();
+            this.levelData.grid.forEach(function(row){
+                row.forEach(function(cell){
+                    if (food.position.x === cell.x && food.position.y === cell.y){
+                        cell.filled = false;
+                    }
+                }, this);
+            }, this);
             this.foodCollected++;
             this.updateFoodStats(this.foodCollected);
             //gulping sound
         } else {
             this.endLoops();
-            this.dieHorribly(food._frame.index);
+            this.dieEating(food._frame.index);
         }
     },
     updateFoodStats: function(foodCollected){
         this.textObject.setText('Paleo-Perfect Food: ' + foodCollected);
+    },
+    spawnWolf: function(player){
+        this.wolf.x = player.position.x + this.game.world.width;
+        this.wolf.y = player.position.y;
+        console.log("wolf running");
+        this.wolf.play('runYouDown');
+        this.wolf.body.velocity.x = -this.levelData.wolfRunningSpeed;
+        this.wolfCounter++;
+        this.wolf.events.onOutOfBounds.add(this.wolfOut, this);
+    },
+    wolfOut: function(){
+        console.log("am I out of bounds?");
+        this.velocity.x = 0;
+        // if (this.checkWorldBounds) {        
+        //     //  The Sprite is already out of the world bounds, so let's check to see if it has come back again        
+        //     if (this._cache[5] === 1 && this.game.world.bounds.intersects(this._bounds)) {
+        //         this._cache[5] = 0; 
+        //         this.events.onEnterBounds.dispatch(this);
+        //     } else if (this._cache[5] === 0 && !this.game.world.bounds.intersects(this._bounds)) { 
+        //         //  The Sprite WAS in the screen, but has now left. 
+        //         this._cache[5] = 1;            
+        //         this.events.onOutOfBounds.dispatch(this); 
+                
+        //         return false;
+        //     }
+        // }
+    },
+    wolfDevour: function(wolf, food){
+        food.kill();
+        console.log("devoured " + food.key);
+        this.levelData.grid.forEach(function(row){
+            row.forEach(function(cell){
+                if (food.position.x === cell.x && food.position.y === cell.y){
+                        cell.filled = false;
+                }
+            }, this);
+        }, this);
     },
     killFood: function(){
         var foodSprite = this.game.rnd.pick(this.allFood.children);
@@ -162,9 +223,13 @@ Paleo.GameState = {
             foodSprite.kill();
         }
     },
-    dieHorribly: function(junk){
+    dieEating: function(junk){
         //hacking, coughing sound
         this.game.state.start('GameOver', true, false, junk, this.foodCollected);
+    },
+    dieHorribly: function(player, wolf){
+        //wolf snarl and scream
+        this.game.state.start('GameOver', true, false, wolf.key, this.foodCollected);
     },
     talkingShit: function() {
         this.thorgShitTalk = this.game.rnd.pick(this.levelData.thorgMessages);
