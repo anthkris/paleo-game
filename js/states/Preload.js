@@ -10,8 +10,8 @@ Paleo.PreloadState = {
         this.load.image('Thorg', 'assets/images/Thorg.png');
         this.load.text('level1', 'assets/data/level1.json');
         this.load.image('voidBG', 'assets/images/void_BG.png');
-        this.game.load.bitmapFont('jaynkBlack', 'assets/fonts/jaynkBlack.png', 'assets/fonts/jaynkBlack.xml');
-        this.game.load.bitmapFont('jaynk', 'assets/fonts/jaynkWhite.png', 'assets/fonts/jaynkWhite.xml');
+        this.game.load.bitmapFont('stoneAgeBlack', 'assets/fonts/stoneAgeblack.png', 'assets/fonts/stoneAgeblack.xml');
+        this.game.load.bitmapFont('stoneAgeWhite', 'assets/fonts/stoneAgewhite.png', 'assets/fonts/stoneAgewhite.xml');
         
         this.preloadBar = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'preloadBar');
         this.preloadBar.anchor.setTo(0.5);

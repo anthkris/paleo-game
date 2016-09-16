@@ -9,7 +9,7 @@ Paleo.Food = function(game, x, y, foodArray){
     Phaser.Sprite.call(this, this.game, x, y, 'food', frame);
     this.game.physics.arcade.enable(this);
     this.scale.set(0.3);
-    this.anchor.setTo(0.5);
+    //this.anchor.setTo(0.5);
     //this.disappear(this);
 
 };
@@ -23,7 +23,7 @@ Paleo.Food.prototype.disappear = function(sprite) {
     }, this);
 };
 Paleo.Food.prototype.reset = function(x, y, foodArray) {
-    console.log("reset the dead");
+    //console.log("reset the dead");
     var frame = this.game.rnd.pick(foodArray);
     Phaser.Sprite.prototype.reset.call(this, x, y);
     this.frame = frame;

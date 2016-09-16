@@ -11,16 +11,16 @@ Paleo.GameState = {
         //parse the file
         this.levelData = JSON.parse(this.game.cache.getText('level1'));
         this.foodCollected = 0;
-        this.textObject = this.game.add.bitmapText(30, 30, 'jaynkBlack', 'Paleo-Perfect Food: ' + this.foodCollected, 28);
+        this.textObject = this.game.add.bitmapText(30, 30, 'stoneAgeBlack', 'Paleo-Perfect Food ' + this.foodCollected, 28);
         
     	//Food
     	this.allFood = this.game.add.group();
     	
         //creation loops
         this.timerEvent;
-        this.foodLoop = this.game.time.events.loop(Phaser.Timer.SECOND + Math.random(), this.createFood, this);
-        this.junkLoop = this.game.time.events.loop(Phaser.Timer.SECOND + 2000 * Math.random(), this.createJunk, this);
-        this.killLoop = this.game.time.events.loop(Phaser.Timer.SECOND + 5000 * Math.random(), this.killFood, this);
+        this.foodLoop = this.game.time.events.loop(Phaser.Timer.SECOND + (2000 * Math.random()), this.createFood, this);
+        this.junkLoop = this.game.time.events.loop(Phaser.Timer.SECOND + (2000 * Math.random()), this.createJunk, this);
+        this.killLoop = this.game.time.events.loop(Phaser.Timer.SECOND + (5000 * Math.random()), this.killFood, this);
         
         this.player = this.add.sprite(this.levelData.playerStart.x, this.levelData.playerStart.y, 'player');
         this.player.frame = 1;
@@ -82,36 +82,24 @@ Paleo.GameState = {
         this.game.time.events.remove(this.junkLoop);
         this.game.time.events.remove(this.killLoop);
     },
-    randomSpawnPosition: function(){
-        var x = this.game.rnd.between(50, 550);
-        var y = this.game.rnd.between(50, 400);
-        var timesToTry = 100;
-        var timesToTryCount = 0;
-        if(this.allFood.children.length > 0) {
-            for (var i = 0; i <=timesToTry; i++) {
-                //console.log(this.allFood.children.length);
-                for (var j = 0; j < this.allFood.children.length ; j++){
-                    if (Phaser.Math.distance(x, y, this.allFood.children[j].x, this.allFood.children[j].y) < 150 || 
-                        Phaser.Math.distance(x, y, this.playerPosition.x,  this.playerPosition.y) < 97) {
-                        //console.log("too close together");
-                        return undefined;
-                    } else {
-                         return [x, y]; 
-                    }
-                    timesToTryCount++;
-                }
-            }
-            if (timesToTryCount === timesToTry){
-                //console.log("ran out of tries");
-                return [x, y];
-            }
-        } else {
-            return [x, y]; 
+    randomSpawnPosition: function(player){
+        var currentCoordinate = [];
+        var randomRow = this.levelData.grid[Math.floor(Math.random() * this.levelData.grid.length)];
+        var randomCell = randomRow[Math.floor(Math.random() * randomRow.length)];
+        if (Phaser.Math.difference(player.x, randomCell.x) < 39 || Phaser.Math.difference(player.y, randomCell.y) < 39) {
+            randomCell.filled = true;
         }
-        
+        if (randomCell.filled === true){
+            this.randomSpawnPosition(player);
+        } else {
+            currentCoordinate.push(randomCell.x);
+            currentCoordinate.push(randomCell.y);
+            randomCell.filled = true;
+            return currentCoordinate;
+        }
     },
     createFood: function(){
-        var coordinates = this.randomSpawnPosition();
+        var coordinates = this.randomSpawnPosition(this.player);
         var food = this.allFood.getFirstDead(false);
         if (!food) {
             if (coordinates !== undefined){
@@ -134,7 +122,7 @@ Paleo.GameState = {
         }
     },
     createJunk: function(){
-        var coordinates = this.randomSpawnPosition();
+        var coordinates = this.randomSpawnPosition(this.player);
         var junk = this.allFood.getFirstDead(false);
         if (!junk) {
             if (coordinates !== undefined){

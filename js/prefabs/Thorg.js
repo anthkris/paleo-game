@@ -7,7 +7,7 @@ Paleo.Thorg = function(game, timerEvent, message) {
     this.message = message;
     //console.log(this.displayLetterByLetterText);
     
-    this.textObject = game.add.bitmapText(90, game.world.height - 80, 'jaynk', "", 22);
+    this.textObject = game.add.bitmapText(90, game.world.height - 80, 'stoneAgeWhite', "", 22);
 
     this.textObject.visible = false;
     this.textObject.fixedToCamera = true;

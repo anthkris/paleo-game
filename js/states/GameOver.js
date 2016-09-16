@@ -151,7 +151,7 @@ Paleo.GameOverState = {
         ];
        
         this.message = 'You die eating\n' + this.junkFood + '.\nYou collect ' + this.foodCount + ' real food.\n\n' + this.game.rnd.pick(this.saltInWound);
-        this.endText = this.game.add.bitmapText(this.game.width / 2, this.game.height / 2, 'jaynkBlack', this.message, 28);
+        this.endText = this.game.add.bitmapText(this.game.width / 2, this.game.height / 2, 'stoneAgeBlack', this.message, 28);
         this.endText.anchor.setTo(0.5);
         this.endText.align = 'center';
     },
