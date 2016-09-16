@@ -89,13 +89,13 @@ Paleo.GameState = {
         if (Phaser.Math.difference(player.x, randomCell.x) < 39 || Phaser.Math.difference(player.y, randomCell.y) < 39) {
             randomCell.filled = true;
         }
-        if (randomCell.filled === true){
-            this.randomSpawnPosition(player);
-        } else {
+        if (randomCell.filled !== true){
             currentCoordinate.push(randomCell.x);
             currentCoordinate.push(randomCell.y);
             randomCell.filled = true;
             return currentCoordinate;
+        } else {
+            return this.randomSpawnPosition(player);
         }
     },
     createFood: function(){
