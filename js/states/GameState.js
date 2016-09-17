@@ -52,7 +52,7 @@ Paleo.GameState = {
     },
     update: function() {
         this.game.physics.arcade.collide(this.player, this.allFood, this.collectFood, null, this);
-        this.game.physics.arcade.collide(this.wolf, this.allFood, this.wolfDevour, null, this);
+        this.game.physics.arcade.overlap(this.wolf, this.allFood, this.wolfDevour, null, this);
         this.game.physics.arcade.collide(this.player, this.wolf, this.dieHorribly, null, this);
         this.playerPosition = this.player.position;
         if (this.cursors.down.isDown) {
@@ -83,7 +83,7 @@ Paleo.GameState = {
             this.updateNextEvent();
             // Do something
         }
-        if(this.allFood.children.length > 35 && this.wolfCounter === 0){
+        if(this.allFood.countLiving() > 35 && this.wolfCounter === 0){
             //console.log("Wolf running");
             this.spawnWolf(this.player);
         }
@@ -116,7 +116,7 @@ Paleo.GameState = {
     },
     createFood: function(){
         var coordinates = this.randomSpawnPosition(this.player);
-        var food = this.allFood.getFirstDead(false);
+        var food = this.allFood.getFirstDead();
         if (!food) {
             if (coordinates !== undefined){
                 //console.log("place food");
@@ -140,7 +140,7 @@ Paleo.GameState = {
     },
     createJunk: function(){
         var coordinates = this.randomSpawnPosition(this.player);
-        var junk = this.allFood.getFirstDead(false);
+        var junk = this.allFood.getFirstDead();
         if (!junk) {
             if (coordinates !== undefined){
                 junk = new Paleo.Junk(this.game, coordinates[0], coordinates[1], this.levelData.junkArray);
@@ -160,6 +160,7 @@ Paleo.GameState = {
     },
     collectFood: function(player, food){
         if (this.levelData.junkArray.indexOf(food._frame.index) === -1) {
+            food.alive = false;
             food.kill();
             this.levelData.grid.forEach(function(row){
                 row.forEach(function(cell){
@@ -189,24 +190,13 @@ Paleo.GameState = {
         this.wolf.events.onOutOfBounds.add(this.wolfOut, this);
     },
     wolfOut: function(){
-        console.log("am I out of bounds?");
-        this.velocity.x = 0;
-        // if (this.checkWorldBounds) {        
-        //     //  The Sprite is already out of the world bounds, so let's check to see if it has come back again        
-        //     if (this._cache[5] === 1 && this.game.world.bounds.intersects(this._bounds)) {
-        //         this._cache[5] = 0; 
-        //         this.events.onEnterBounds.dispatch(this);
-        //     } else if (this._cache[5] === 0 && !this.game.world.bounds.intersects(this._bounds)) { 
-        //         //  The Sprite WAS in the screen, but has now left. 
-        //         this._cache[5] = 1;            
-        //         this.events.onOutOfBounds.dispatch(this); 
-                
-        //         return false;
-        //     }
-        // }
+        //console.log("am I out of bounds?");
+        this.wolf.body.velocity.x = 0;
+        this.wolfCounter = 0;
     },
     wolfDevour: function(wolf, food){
         food.kill();
+        food.alive = false;
         console.log("devoured " + food.key);
         this.levelData.grid.forEach(function(row){
             row.forEach(function(cell){
