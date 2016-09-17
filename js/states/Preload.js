@@ -11,6 +11,8 @@ Paleo.PreloadState = {
         this.load.image('Thorg', 'assets/images/Thorg.png');
         this.load.text('level1', 'assets/data/level1.json');
         this.load.image('voidBG', 'assets/images/void_BG.png');
+        this.load.audio('crunch', ['assets/audio/crunch.mp3', 'assets/audio/crunch.ogg']);
+        this.load.audio('wolfGrowl', ['assets/audio/wolfGrowl.mp3', 'assets/audio/wolfGrowl.ogg']);
         this.game.load.bitmapFont('stoneAgeBlack', 'assets/fonts/stoneAgeblack.png', 'assets/fonts/stoneAgeblack.xml');
         this.game.load.bitmapFont('stoneAgeWhite', 'assets/fonts/stoneAgewhite.png', 'assets/fonts/stoneAgewhite.xml');
         

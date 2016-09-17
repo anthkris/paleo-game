@@ -30,11 +30,10 @@ Paleo.GameState = {
         this.player.animations.add('walkLeft', [9, 10, 11, 10], 10, true);
         this.player.animations.add('walkRight', [3, 4, 5, 4], 10, true);
     	this.game.physics.arcade.enable(this.player);
-    	//this.player.body.allowGravity = false;
     	this.player.body.collideWorldBounds = true;
-    	this.player.body.setSize(25, 35);
+    	this.player.body.setSize(25, 30);
     	this.player.body.offset.setTo(7, 5);
-    	this.player.body.collideWorldBounds = false;
+    	this.player.body.collideWorldBounds = true;
     	
     	this.wolf = this.add.sprite(this.player.position.x + this.game.world.width, this.player.position.y, 'wolf');
         this.wolf.frame = 46;
@@ -45,8 +44,11 @@ Paleo.GameState = {
         this.wolf.animations.add('runYouDown', [50, 51, 52, 53,54], 10, true);
         this.wolf.animations.add('killYou', [57, 58, 59, 58], 10, true);
     	this.wolfCounter = 0;
+    	
     	this.thorg = this.add.sprite(30, this.game.world.height - 70, 'Thorg');
     	this.nextEvent = 4000;
+    	this.wolfGrowl = this.add.audio('wolfGrowl');
+    	this.crunch = this.add.audio('crunch');
     	//this.talkingShit();
     	//this.game.time.events.repeat(Phaser.Timer.SECOND * 4, 20, this.talkingShit, this);
     },
@@ -55,6 +57,7 @@ Paleo.GameState = {
         this.game.physics.arcade.overlap(this.wolf, this.allFood, this.wolfDevour, null, this);
         this.game.physics.arcade.collide(this.player, this.wolf, this.dieHorribly, null, this);
         this.playerPosition = this.player.position;
+        
         if (this.cursors.down.isDown) {
             this.player.body.velocity.y = this.levelData.runningSpeed;
             this.player.body.velocity.x = 0;
@@ -78,19 +81,16 @@ Paleo.GameState = {
     	    this.player.body.velocity.x = 0;
         }
         if (this.game.time.now > this.nextEvent) {
-            console.log("started");
             this.talkingShit();
             this.updateNextEvent();
-            // Do something
         }
         if(this.allFood.countLiving() > 35 && this.wolfCounter === 0){
-            //console.log("Wolf running");
             this.spawnWolf(this.player);
         }
     },
     render: function(){
       //this.game.debug.body(this.player);
-      this.game.debug.body(this.wolf);  
+      //this.game.debug.body(this.wolf);  
     },
     endLoops: function(){
         // Stop the loops when the delayed event triggers
@@ -118,23 +118,11 @@ Paleo.GameState = {
         var coordinates = this.randomSpawnPosition(this.player);
         var food = this.allFood.getFirstDead();
         if (!food) {
-            if (coordinates !== undefined){
-                //console.log("place food");
-                food = new Paleo.Food(this.game, coordinates[0], coordinates[1], this.levelData.foodArray);
-                this.allFood.add(food);
-            } else {
-                //console.log("retry calculation");
-                this.createFood();
-            }
+            food = new Paleo.Food(this.game, coordinates[0], coordinates[1], this.levelData.foodArray);
+            this.allFood.add(food);
         } else {
-            if (coordinates !== undefined){
-                // reset position
-                //console.log("place resurrected food");
-                food.reset(coordinates[0], coordinates[1], this.levelData.foodArray);
-            } else {
-                //console.log("retry calculation for dead food");
-                this.createFood();
-            }
+            // reset position
+            food.reset(coordinates[0], coordinates[1], this.levelData.foodArray);
         }
         food.events.onAddedToGroup.add(this.spawnWolf, this);
     },
@@ -142,19 +130,11 @@ Paleo.GameState = {
         var coordinates = this.randomSpawnPosition(this.player);
         var junk = this.allFood.getFirstDead();
         if (!junk) {
-            if (coordinates !== undefined){
-                junk = new Paleo.Junk(this.game, coordinates[0], coordinates[1], this.levelData.junkArray);
-                this.allFood.add(junk);
-            } else {
-               this.createJunk();
-            }
+            junk = new Paleo.Junk(this.game, coordinates[0], coordinates[1], this.levelData.junkArray);
+            this.allFood.add(junk);
         } else {
-            if (coordinates !== undefined){
-                // reset position
-                junk.reset(coordinates[0], coordinates[1], this.levelData.junkArray);
-            } else {
-                this.createJunk();
-            }
+            // reset position
+            junk.reset(coordinates[0], coordinates[1], this.levelData.junkArray);
         }
         junk.events.onAddedToGroup.add(this.spawnWolf, this);
     },
@@ -171,7 +151,8 @@ Paleo.GameState = {
             }, this);
             this.foodCollected++;
             this.updateFoodStats(this.foodCollected);
-            //gulping sound
+            //crunching sound
+            this.crunch.play();
         } else {
             this.endLoops();
             this.dieEating(food._frame.index);
@@ -183,25 +164,23 @@ Paleo.GameState = {
     spawnWolf: function(player){
         this.wolf.x = player.position.x + this.game.world.width;
         this.wolf.y = player.position.y;
-        console.log("wolf running");
         this.wolf.play('runYouDown');
         this.wolf.body.velocity.x = -this.levelData.wolfRunningSpeed;
+        this.wolfGrowl.play();
         this.wolfCounter++;
         this.wolf.events.onOutOfBounds.add(this.wolfOut, this);
     },
     wolfOut: function(){
-        //console.log("am I out of bounds?");
         this.wolf.body.velocity.x = 0;
         this.wolfCounter = 0;
     },
     wolfDevour: function(wolf, food){
         food.kill();
         food.alive = false;
-        console.log("devoured " + food.key);
         this.levelData.grid.forEach(function(row){
             row.forEach(function(cell){
                 if (food.position.x === cell.x && food.position.y === cell.y){
-                        cell.filled = false;
+                    cell.filled = false;
                 }
             }, this);
         }, this);
@@ -209,7 +188,6 @@ Paleo.GameState = {
     killFood: function(){
         var foodSprite = this.game.rnd.pick(this.allFood.children);
         if(foodSprite && this.levelData.junkArray.indexOf(foodSprite._frame.index) < 1){
-            //console.log("killing food");
             foodSprite.kill();
         }
     },
