@@ -17,7 +17,6 @@ Paleo.GameState = {
 		Paleo.game.audioButton = Paleo.game.add.button(540, 50, 'audioButton', Paleo.game.global.muteAudio);
 		Paleo.game.audioButton.anchor.setTo(0.5);
 		Paleo.game.audioButton.scale.setTo(0.3);
-		console.log(Paleo.game.caveMusic.isPlaying);
 		if (Paleo.game.caveMusic.isPlaying === true) {
 		 	 Paleo.game.audioButton.frame = 1;
 		 } else if (Paleo.game.caveMusic.isPlaying === false) {
@@ -57,8 +56,8 @@ Paleo.GameState = {
         this.wolf.scale.setTo(2);
         this.game.physics.arcade.enable(this.wolf);
         this.wolf.checkWorldBounds = true;
-        this.wolf.animations.add('runYouDown', [50, 51, 52, 53,54], 10, true);
-        this.wolf.animations.add('killYou', [57, 58, 59, 58], 10, true);
+        this.wolf.animations.add('runYouDown', [5,6,7,8,9,10,2], 10, true);
+        //this.wolf.animations.add('killYou', [57, 58, 59, 58], 10, true);
     	this.wolfCounter = 0;
     	
     	this.thorg = this.add.sprite(30, this.game.world.height - 70, 'Thorg');

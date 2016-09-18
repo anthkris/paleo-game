@@ -7,8 +7,9 @@ Paleo.PreloadState = {
     preload: function() {
         this.load.spritesheet('player', 'assets/images/GirlDarkExample.png', 39, 39, 12, 1, 1);
         this.load.spritesheet('food', 'assets/images/FoodSpritesheet.png', 97, 93, 84, 0, 0);
-        this.load.spritesheet('wolf', 'assets/images/wolfsheet2.png', 64, 31.9166667, 60, 0, 0);
+        this.load.atlasJSONHash('wolf', 'assets/images/wolfsheet2.png', 'assets/images/wolfsheet2.json');
         this.load.spritesheet('audioButton', 'assets/images/audioButton.png', 100, 100, 2);
+        this.load.spritesheet('retryButton', 'assets/images/blueButton.png', 200, 49, 2);
         this.load.image('Thorg', 'assets/images/Thorg.png');
         this.load.text('level1', 'assets/data/level1.json');
         this.load.image('bottomBorder', 'assets/images/transparentBorder.png');

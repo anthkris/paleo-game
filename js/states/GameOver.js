@@ -196,6 +196,7 @@ Paleo.GameOverState = {
             "You think you eat like Thorg?\nYou not good enough to\neat like Thorg!",
             "You keep trying. You get better.\nExcept not really.\nYou doomed to fail."
         ];
+        this.retryButton = this.game.add.button((this.game.world.width / 2) - 100, 400, 'retryButton', this.retry, this, 0, 0, 1, 0);
         
         // Mute audio
 		Paleo.game.audioButton = Paleo.game.add.button(540, 50, 'audioButton', Paleo.game.global.muteAudio);
@@ -223,8 +224,11 @@ Paleo.GameOverState = {
            }
         this.message += this.junkFood + '.\nYou collect ' + this.foodCount + ' real food.\n\n' + this.game.rnd.pick(this.saltInWound);
        }
-        this.endText = this.game.add.bitmapText(this.game.width / 2, this.game.height / 2, 'stoneAgeWhite', this.message, 32);
+        this.endText = this.game.add.bitmapText(this.game.width / 2, (this.game.height / 2) - 50, 'stoneAgeWhite', this.message, 32);
         this.endText.anchor.setTo(0.5);
         this.endText.align = 'center';
+    },
+    retry: function(){
+        this.game.state.start('Game', Phaser.Plugin.StateTransition.In.FadeIn, Phaser.Plugin.StateTransition.Out.FadeOut);
     }
 };

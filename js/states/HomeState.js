@@ -77,7 +77,7 @@ Paleo.HomeState = {
         }
     },
     updateNextEvent: function(){
-        this.nextEvent = this.game.time.now + (this.game.rnd.realInRange(12, 15) * 1000);
+        this.nextEvent = this.game.time.now + (this.game.rnd.realInRange(10, 13) * 1000);
     },
     pauseGame: function(){
         //this.gamePaused = true;
