@@ -196,6 +196,17 @@ Paleo.GameOverState = {
             "You think you eat like Thorg?\nYou not good enough to\neat like Thorg!",
             "You keep trying. You get better.\nExcept not really.\nYou doomed to fail."
         ];
+        
+        // Mute audio
+		Paleo.game.audioButton = Paleo.game.add.button(540, 50, 'audioButton', Paleo.game.global.muteAudio);
+		Paleo.game.audioButton.anchor.setTo(0.5);
+		Paleo.game.audioButton.scale.setTo(0.3);
+		if (Paleo.game.caveMusic.isPlaying === true) {
+		 	 Paleo.game.audioButton.frame = 1;
+		 } else if (Paleo.game.caveMusic.isPlaying === false) {
+			 Paleo.game.audioButton.frame = 0;
+		 } 
+        
        if(this.junk === "wolf"){
            this.message = 'You get eaten by wolf.\nThat punishment enough.';
        } else {

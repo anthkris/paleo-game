@@ -12,6 +12,17 @@ Paleo.GameState = {
         this.game.physics.arcade.enable(this.transparentBorder);
         this.transparentBorder.body.allowGravity = false;
     	this.transparentBorder.body.immovable = true;
+    	
+    	// Mute audio
+		Paleo.game.audioButton = Paleo.game.add.button(540, 50, 'audioButton', Paleo.game.global.muteAudio);
+		Paleo.game.audioButton.anchor.setTo(0.5);
+		Paleo.game.audioButton.scale.setTo(0.3);
+		console.log(Paleo.game.caveMusic.isPlaying);
+		if (Paleo.game.caveMusic.isPlaying === true) {
+		 	 Paleo.game.audioButton.frame = 1;
+		 } else if (Paleo.game.caveMusic.isPlaying === false) {
+			 Paleo.game.audioButton.frame = 0;
+		 } 
         
         //parse the file
         this.levelData = JSON.parse(this.game.cache.getText('level1'));

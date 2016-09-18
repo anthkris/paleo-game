@@ -7,9 +7,16 @@ Paleo.HomeState = {
     },
     create: function() {
         this.background = this.game.add.tileSprite(0,0, this.game.world.width, 460, 'grass');
-    	this.caveMusic = this.add.audio('cheeZeeCave');
-    	this.caveMusic.play();
-    	this.caveMusic.loop = true;
+        
+    	Paleo.game.caveMusic = this.game.add.audio('cheeZeeCave');
+    	Paleo.game.caveMusic.play();
+    	Paleo.game.caveMusic.loop = true;
+    	
+    	// Mute audio
+		Paleo.game.audioButton = Paleo.game.add.button(540, 50, 'audioButton', Paleo.game.global.muteAudio);
+		Paleo.game.audioButton.anchor.setTo(0.5);
+		Paleo.game.audioButton.scale.setTo(0.3);
+		Paleo.game.audioButton.frame = 1;
     	
         //creation loops
         this.timerEvent;
@@ -41,9 +48,9 @@ Paleo.HomeState = {
       //this.game.debug.body(this.wolf);  
     },
     giveInfo: function() {
-        this.thorgInfo1 = "Me Thorg.\nAnd me be your guide\nto the Paleo life.";
-        this.thorgInfo2 = "To be Paleo mean be Perfect.\nThere no room for mistaks.\nErrrr... mistakes.";
-        this.thorgInfo3 = "You collect Paleo food like Paleo man.\nLeave junk on ground.\nJunk for losers... and wolves.";
+        this.thorgInfo1 = "Me Thorg.\nAnd me be your guide\nto Paleo life.";
+        this.thorgInfo2 = "Paleo mean be Perfect.\nThere no room for mistaks.\nErrrr... mistakes.";
+        this.thorgInfo3 = "You collect only best Paleo food.\nLeave junk on ground.\nJunk for losers... and wolves.";
         this.thorgInfo4 = "No mess up.";
         this.message;
         switch(this.nextEventCounter){
