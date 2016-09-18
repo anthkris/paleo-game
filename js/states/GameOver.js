@@ -155,7 +155,7 @@ Paleo.GameOverState = {
                 this.junkFood = 'ale'
                 break;
             case 64: 
-                this.junkFood = 'a piece of\npumpkin pie in crust'
+                this.junkFood = 'a piece of\npumpkin pie'
                 break;
             case 69: 
                 this.junkFood = 'a sno cone'
@@ -212,7 +212,7 @@ Paleo.GameOverState = {
            }
         this.message += this.junkFood + '.\nYou collect ' + this.foodCount + ' real food.\n\n' + this.game.rnd.pick(this.saltInWound);
        }
-        this.endText = this.game.add.bitmapText(this.game.width / 2, this.game.height / 2, 'stoneAgeWhite', this.message, 28);
+        this.endText = this.game.add.bitmapText(this.game.width / 2, this.game.height / 2, 'stoneAgeWhite', this.message, 32);
         this.endText.anchor.setTo(0.5);
         this.endText.align = 'center';
     }

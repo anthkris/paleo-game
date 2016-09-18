@@ -5,8 +5,13 @@ Paleo.GameState = {
         
     },
     create: function() {
+        this.game.scale.setGameSize(600, 550);
         this.cursors = this.game.input.keyboard.createCursorKeys();
         this.background = this.game.add.tileSprite(0,0, this.game.world.width, 460, 'grass');
+        this.transparentBorder = this.game.add.sprite(0, this.game.world.height - 90, 'bottomBorder');
+        this.game.physics.arcade.enable(this.transparentBorder);
+        this.transparentBorder.body.allowGravity = false;
+    	this.transparentBorder.body.immovable = true;
         
         //parse the file
         this.levelData = JSON.parse(this.game.cache.getText('level1'));
@@ -49,13 +54,15 @@ Paleo.GameState = {
     	this.nextEvent = 4000;
     	this.wolfGrowl = this.add.audio('wolfGrowl');
     	this.crunch = this.add.audio('crunch');
-    	//this.talkingShit();
-    	//this.game.time.events.repeat(Phaser.Timer.SECOND * 4, 20, this.talkingShit, this);
+    	
+    	this.game.onPause.add(this.gamePause, this);
+        this.game.onResume.add(this.gameResume, this);
     },
     update: function() {
         this.game.physics.arcade.collide(this.player, this.allFood, this.collectFood, null, this);
         this.game.physics.arcade.overlap(this.wolf, this.allFood, this.wolfDevour, null, this);
         this.game.physics.arcade.collide(this.player, this.wolf, this.dieHorribly, null, this);
+        this.game.physics.arcade.collide(this.player, this.transparentBorder, null, null, this);
         this.playerPosition = this.player.position;
         
         if (this.cursors.down.isDown) {
@@ -80,9 +87,16 @@ Paleo.GameState = {
     	    this.player.body.velocity.y = 0;
     	    this.player.body.velocity.x = 0;
         }
-        if (this.game.time.now > this.nextEvent) {
-            this.talkingShit();
-            this.updateNextEvent();
+        if (this.game.time.now > this.nextEvent && !this.gamePaused) {
+            if (Paleo.Thorg.completeText === undefined){
+                this.talkingShit();
+                this.updateNextEvent();
+            } else if(Paleo.Thorg.completeText) {
+                this.talkingShit();
+                this.updateNextEvent();
+            } else {
+                this.updateNextEvent();
+            }  
         }
         if(this.allFood.countLiving() > 35 && this.wolfCounter === 0){
             this.spawnWolf(this.player);
@@ -193,17 +207,27 @@ Paleo.GameState = {
     },
     dieEating: function(junk){
         //hacking, coughing sound
-        this.game.state.start('GameOver', true, false, junk, this.foodCollected);
+        this.game.state.start('GameOver', Phaser.Plugin.StateTransition.In.FadeIn, Phaser.Plugin.StateTransition.Out.FadeOut, true, false, junk, this.foodCollected);
     },
     dieHorribly: function(player, wolf){
         //wolf snarl and scream
-        this.game.state.start('GameOver', true, false, wolf.key, this.foodCollected);
+        this.game.state.start('GameOver', Phaser.Plugin.StateTransition.In.FadeIn, Phaser.Plugin.StateTransition.Out.FadeOut, true, false, wolf.key, this.foodCollected);
     },
     talkingShit: function() {
         this.thorgShitTalk = this.game.rnd.pick(this.levelData.thorgMessages);
-        this.thorgMessage = new Paleo.Thorg(this.game, this.timerEvent, this.thorgShitTalk, Paleo.GameState);
+        this.thorgMessage = new Paleo.Thorg(this.game, this.timerEvent, this.thorgShitTalk, 90, this.game.world.height - 80, 22, Paleo.GameState);
     },
     updateNextEvent: function(){
         this.nextEvent = this.game.time.now + (this.game.rnd.realInRange(15, 22) * 1000);
+    },
+    gamePause: function(){
+        this.gamePaused = true;
+        Paleo.Thorg.timerEvent.timer.pause();
+        Paleo.Thorg.timerEvent.timer.running = false;
+    },
+    gameResume: function(){
+        Paleo.Thorg.timerEvent.timer.resume();
+        Paleo.Thorg.timerEvent.timer.running = true;
+        this.gamePaused = false;
     }
 };
