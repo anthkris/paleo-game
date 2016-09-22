@@ -10,6 +10,7 @@ Paleo.Thorg = function(game, timerEvent, message, x, y, fontSize) {
     this.textObject.visible = false;
     this.textObject.fixedToCamera = true;
     Paleo.Thorg.completeText = true;
+
     this.displayLetterByLetterText(this.textObject, this.message, function() {
         // stuff you want to do at the end of the animation
         // eg. this.input.onDown.addOnce(this.start, this);

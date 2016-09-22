@@ -229,6 +229,7 @@ Paleo.GameOverState = {
         this.endText.align = 'center';
     },
     retry: function(){
-        this.game.state.start('Game', Phaser.Plugin.StateTransition.In.FadeIn, Phaser.Plugin.StateTransition.Out.FadeOut);
+        Paleo.Thorg.completeText = true;
+        this.game.state.start('Game', Phaser.Plugin.StateTransition.In.FadeIn, Phaser.Plugin.StateTransition.Out.FadeOut, true, false);
     }
 };
